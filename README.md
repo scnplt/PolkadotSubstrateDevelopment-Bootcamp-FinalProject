@@ -23,6 +23,16 @@
   - [4.3. Convert the chain specification to raw format](#43-convert-the-chain-specification-to-raw-format)
   - [4.4. Start the first node](#44-start-the-first-node)
   - [4.5. Start the second node](#45-start-the-second-node)
+- [5. Smart Contracts](#5-smart-contracts)
+  - [5.1. Prerequisites](#51-prerequisites)
+  - [5.2. Create a new smart contract project](#52-create-a-new-smart-contract-project)
+  - [5.3. Compile the contract](#53-compile-the-contract)
+  - [5.4. Run a Substrate node and deploy the contract](#54-run-a-substrate-node-and-deploy-the-contract)
+  - [5.5. Call the contract](#55-call-the-contract)
+    - [5.5.1. Call the contract with command line](#551-call-the-contract-with-command-line)
+    - [5.5.2. Call the contract with Contracts UI](#552-call-the-contract-with-contracts-ui)
+- [## 6. References](#6-references)
+- [7. License](#7-license)
 
 ## 1. Getting Started
 
@@ -81,7 +91,7 @@ a. Start the node in development node:
 
 Console output should look like the picture  
 
-<img src="images/output-start-node-dev.png" width="750" alt="Console output: Start the node in development mode"/> 
+<img src="assets/output-start-node-dev.png" width="750" alt="Console output: Start the node in development mode"/> 
 
 ### 2.2. Frontend
 
@@ -107,7 +117,7 @@ yarn start
 Go to the http://localhost:8000/substrate-front-end-template.  
 The site should look like the image
 
-<img src="images\output-front-end-start.png" width="750" alt="localhost:8000"/> 
+<img src="assets/output-front-end-start.png" width="750" alt="localhost:8000"/> 
 
 ### 2.3. Stop the node and front-end template
 
@@ -141,7 +151,7 @@ b. Start the local blockchain node using `bob` account:
 
 Console output should look like the picture  
 
-<img src="images/output-start-node-bob.png" width="750" alt="Console output: Start the node (Bob)"/>  
+<img src="assets/output-start-node-bob.png" width="750" alt="Console output: Start the node (Bob)"/>  
 
 c. Add a second node to the network:
 
@@ -163,12 +173,12 @@ c. Add a second node to the network:
 
 Console output should look like the picture  
 
-<img src="images/output-start-node-alice.png" width="750" alt="Console output: Start the node (Alice)"/> 
+<img src="assets/output-start-node-alice.png" width="750" alt="Console output: Start the node (Alice)"/> 
 
 Go to the https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9946#/explorer  
 This page should look like the picture
 
-<img src="images/polkadot-js-after-alice-node.png" width="750" alt="Polkadot/Substrate Portal (Alice)"/> 
+<img src="assets/polkadot-js-after-alice-node.png" width="750" alt="Polkadot/Substrate Portal (Alice)"/> 
 
 d. Stop the nodes and remove the old chain data:
 
@@ -342,7 +352,7 @@ ls /tmp/node1/chains/local_testnet/keystore
 
 Console output should look like the picture  
 
-<img src="images/output-ls-keystore-node1.png" width="750" alt="Console output: ls /tmp/node1/chains/local_testnet/keystore"/></br>
+<img src="assets/output-ls-keystore-node1.png" width="750" alt="Console output: ls /tmp/node1/chains/local_testnet/keystore"/></br>
 
 e. After you have added your keys to the keystore for the first node under `/tmp/node1`, you can restart the node (step a.)
 
@@ -400,12 +410,243 @@ ls /tmp/node2/chains/local_testnet/keystore
 
 Console output should look like the picture  
 
-<img src="images/output-ls-keystore-node2.png" width="750" alt="Console output: ls /tmp/node2/chains/local_testnet/keystore"/></br>
+<img src="assets/output-ls-keystore-node2.png" width="750" alt="Console output: ls /tmp/node2/chains/local_testnet/keystore"/></br>
 
 e. After you have added your keys to the keystore for the second node under `/tmp/node2`, you can restart the node (step a.)
 
 f. You should see that each node has one peer, same genesis block and state root hashes like the picture.
 
-<img src="images/polkadot-js-after-trusted-nodes.png" width="750" alt="Adding trusted nodes to a network" title="Node1"/></br>
-<img src="images/polkadot-js-after-trusted-nodes-same-genesis-hash-state-node1.png" width="750" alt="Node1" title="Node1"/></br>
-<img src="images/polkadot-js-after-trusted-nodes-same-genesis-hash-state-node2.png" width="750" alt="Node2" title="Node2"/></br>
+<img src="assets/polkadot-js-after-trusted-nodes.png" width="750" alt="Adding trusted nodes to a network" title="Node1"/></br>
+<img src="assets/polkadot-js-after-trusted-nodes-same-genesis-hash-state-node1.png" width="750" alt="Node1" title="Node1"/></br>
+<img src="assets/polkadot-js-after-trusted-nodes-same-genesis-hash-state-node2.png" width="750" alt="Node2" title="Node2"/></br>
+
+## 5. Smart Contracts
+
+### 5.1. Prerequisites
+
+a. Installing `cargo-contract`
+
+- Step 1: `rustup component add rust-src`
+- Step 2: `cargo install --force --locked cargo-contract`
+- Step 4: `cargo contract --help`
+
+The step-3 is to verify the installation. If there is no error in this step, the installation is successful.
+
+b. Install `substrate-contract-node`
+
+- Step 1: `curl -L https://github.com/paritytech/substrate-contracts-node/releases/download/v0.31.0/substrate-contracts-node-linux.tar.gz > substrate-contracts-node-linux.tar.gz`
+- Step 2: `tar -xf substrate-contracts-node-linux.tar.gz`
+- Step 3: `sudo mv artifacts/substrate-contracts-node-linux/substrate-contracts-node /usr/bin/`
+- Step 4: `substrate-contracts-node --help`
+- Step 5: `rm -r artifacts/ substrate-contracts-node-linux.tar.gz`
+
+The step-4 is to verify the installation. If there is no error in this step, the installation is successful.
+
+### 5.2. Create a new smart contract project
+
+This command create new smart contract project: 
+
+```bash
+cargo contract new flipper
+```
+
+Update the `lib.rs` file as desired. In this example, the updated file looks like this:
+
+```rust
+#![cfg_attr(not(feature = "std"), no_std, no_main)]
+
+#[ink::contract]
+mod flipper {
+
+    #[ink(storage)]
+    pub struct Flipper {
+        value: bool,
+    }
+
+    impl Flipper {
+        #[ink(constructor)]
+        pub fn new(init_value: bool) -> Self {
+            Self { value: init_value }
+        }
+
+        #[ink(constructor)]
+        pub fn default() -> Self {
+            Self::new(Default::default())
+        }
+
+        #[ink(message)]
+        pub fn set_value(&mut self, new_value: bool) {
+            self.value = new_value;
+        }
+
+        #[ink(message)]
+        pub fn flip(&mut self) {
+            self.value = !self.value;
+        }
+
+        #[ink(message)]
+        pub fn get(&self) -> bool {
+            self.value
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[ink::test]
+        fn default_works() {
+            let flipper = Flipper::default();
+            assert_eq!(flipper.get(), false);
+        }
+
+        #[ink::test]
+        fn it_works_set_value() {
+            let mut flipper = Flipper::new(false);
+            assert_eq!(flipper.get(), false);
+            flipper.set_value(true);
+            assert_eq!(flipper.get(), true);
+        }
+
+        #[ink::test]
+        fn it_works_flip() {
+            let mut flipper = Flipper::new(false);
+            assert_eq!(flipper.get(), false);
+            flipper.flip();
+            assert_eq!(flipper.get(), true);
+        }
+    }
+}
+```
+
+Run tests to make sure the code works:
+
+```bash
+# Change working directory to flipper
+cargo test
+```
+
+If the console output looks like the picture, it means that all test cases have passed.
+
+<img src="assets/console-output-smart-contract-flipper-cargo-test.png" width="750" alt="Console output: cargo test"/>
+
+### 5.3. Compile the contract
+
+Change the working directory to `flipper` and run the following command:
+
+```bash
+cargo contract build --release
+```
+
+This command build the contract and creates three files named `flipper.contract`, `flipper.json` and `flipper.wasm` in the `/target/ink` folder.
+
+### 5.4. Run a Substrate node and deploy the contract
+
+Run a node: 
+
+```bash
+substrate-contracts-node --log info,runtime::contracts=debug 2>&1
+```
+
+Go to https://contracts-ui.substrate.io/?rpc=ws://127.0.0.1:9944 page in your browser. And click on the `Add New Contract` button as shown in the picture and then click on the `Upload New Contract Code` button.
+
+<img src="assets/contract-ui-upload-contract.png" width="750"/></br>
+
+On the page that opens, select an account, enter a descriptive name for the contract and upload the `flipper.contract` file created in the previous step to the `Upload Contract Bundle` section. If the file is valid, you should get **"Valid contract bundle!"** as shown in the image. Then click the next button.
+
+<img src="assets/contract-ui-upload-contract-bundle.png" width="750"/></br>
+
+Then select **"Deployment Constructor"** on the screen that appears and click the next button.
+
+<img src="assets/contract-ui-instantiate.png" width="750"/></br>
+
+Click the **"Upload and Instantiate"** button to confirm the information or go back and edit it.
+
+<img src="assets/contract-ui-confirm-contract-data.png" width="750"/></br>
+
+After the contract is successfull uploaded, it is directed to a screen as shown in the image
+
+<img src="assets/contract-ui-instantiate-success.png" width="750"/></br>
+
+### 5.5. Call the contract
+
+#### 5.5.1. Call the contract with command line
+
+a. Call the `get` function:
+
+```bash
+# The contract address created for this example is used. 
+# It can be seen from the images in the previous steps that the address is the same.
+cargo contract call --contract 5HBm8n2PV8NC46xAWwTuxgcaabJSvNmQywdii54tmW9vfiQN --message get --suri //Alice
+```
+
+Output:
+
+<img src="assets/output-contract-call-get.png" width="750" alt="Contract - Call the get function"/></br>
+
+b. Call the `flip` function:
+
+```bash
+# After running this command, press enter to confirm transaction.
+cargo contract call --contract 5HBm8n2PV8NC46xAWwTuxgcaabJSvNmQywdii54tmW9vfiQN --message flip --suri //Alice -x
+```
+
+Output:
+
+<img src="assets/output-contract-call-flip.png" width="750" alt="Contract - Call the flip function"/></br>
+
+b. Call the `set_value` function:
+
+```bash
+# After running this command, press enter to confirm transaction.
+cargo contract call --contract 5HBm8n2PV8NC46xAWwTuxgcaabJSvNmQywdii54tmW9vfiQN --message set_value --args false --suri //Alice -x
+```
+
+Output:
+
+<img src="assets/output-contract-call-set_value.png" width="750" alt="Contract - Call the set_value function"/></br>
+
+#### 5.5.2. Call the contract with Contracts UI
+
+a. Call the `get` function: Select **"get"** as **Message to Send** value.
+
+<img src="assets/contract-ui-call-get.png" width="750" alt="Contract - Call the get function"/></br>
+
+b. Call the `flip` function: Select **"flip"** as **Message to Send** value then click **Call contract** button.
+
+<img src="assets/contract-ui-call-flip.png" width="750" alt="Contract - Call the flip function"/></br>
+
+b. Call the `set_value` function: Select **"setValue"** as **Message to Send** value then select the `newValue` data and click the **Call contract** button.
+
+<img src="assets/contract-ui-call-set_value.png" width="750" alt="Contract - Call the flip function"/></br>
+
+## 6. References
+
+- https://docs.substrate.io/
+- https://use.ink/
+
+## 7. License
+
+```
+MIT License
+
+Copyright (c) 2023 Sertan Canpolat
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
