@@ -31,7 +31,7 @@
   - [5.5. Call the contract](#55-call-the-contract)
     - [5.5.1. Call the contract with command line](#551-call-the-contract-with-command-line)
     - [5.5.2. Call the contract with Contracts UI](#552-call-the-contract-with-contracts-ui)
-- [## 6. References](#6-references)
+- [6. References](#6-references)
 - [7. License](#7-license)
 
 ## 1. Getting Started
